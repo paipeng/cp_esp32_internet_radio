@@ -1,9 +1,9 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include "Audio.h"
-
-#define WIFI_SSID "xxx"
-#define WIFI_PASSWD "xxx"
+#include "wifi_const.h"
+//#define WIFI_SSID "xxx"
+//#define WIFI_PASSWD "xxx"
 
 #define MAX98357A_I2S_DOUT  22
 #define MAX98357A_I2S_BCLK 26
