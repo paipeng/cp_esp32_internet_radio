@@ -5,9 +5,9 @@
 #define WIFI_SSID "xxx"
 #define WIFI_PASSWD "xxx"
 
-#define MAX98357A_I2S_DOUT  25
-#define MAX98357A_I2S_BCLK 27
-#define MAX98357A_I2S_LRC  26
+#define MAX98357A_I2S_DOUT  22
+#define MAX98357A_I2S_BCLK 26
+#define MAX98357A_I2S_LRC  25
 Audio audio;
 
 void setup() {
