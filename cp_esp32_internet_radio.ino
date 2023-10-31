@@ -38,7 +38,10 @@ void setup() {
   audio.setVolume(100);
 
   Serial.println("audio connecting...");
-  if (audio.connecttohost("https://lhttp.qingting.fm/live/20024/64k.mp3")) {
+  String url = "http://vis.media-ice.musicradio.com/CapitalMP3";
+  //String url = "https://lhttp.qingting.fm/live/20024/64k.mp3";
+
+  if (audio.connecttohost(url.c_str())) {
     Serial.println("audio playing...");
   } else {
     Serial.println("audio connect failed");
