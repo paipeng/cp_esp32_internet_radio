@@ -11,6 +11,7 @@
 Audio audio;
 
 void setup() {
+  delay(2000);
   Serial.begin(115200);
   Serial.setDebugOutput(true);
   
@@ -26,18 +27,23 @@ void setup() {
     delay(1500);
     Serial.print(".");
   }
+  Serial.println("");
   Serial.println("wifi connected");
-  Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
+  Serial.print("IP address: ");
+  Serial.print(WiFi.localIP());
+  Serial.println("");
 
 
   audio.setPinout(MAX98357A_I2S_BCLK, MAX98357A_I2S_LRC, MAX98357A_I2S_DOUT);
   audio.setVolume(100);
 
   Serial.println("audio connecting...");
-  audio.connecttohost("http://vis.media-ice.musicradio.com/CapitalMP3");
+  if (audio.connecttohost("https://lhttp.qingting.fm/live/20024/64k.mp3")) {
+    Serial.println("audio playing...");
+  } else {
+    Serial.println("audio connect failed");
+  }
 
-  Serial.println("audio playing...");
 }
 
 
