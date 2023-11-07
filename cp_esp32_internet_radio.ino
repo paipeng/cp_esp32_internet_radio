@@ -3,6 +3,7 @@
 #include "Audio.h"
 #include "wifi_const.h"
 #include "CPOledDisplay.h"
+#include "CPIoTMqtt.h"
 //#define WIFI_SSID "xxx"
 //#define WIFI_PASSWD "xxx"
 
@@ -11,6 +12,22 @@
 #define MAX98357A_I2S_LRC  25
 Audio audio;
 CPOledDisplay display;
+CPIoTMqtt mqtt;
+
+
+void beep() {
+}
+
+void mqtt_callback_display(String text) {
+  display.setStatus(text);
+}
+
+void mqtt_callback_pager_message(String sender, String receiver, String message, String textPixelBase64, int textCount) {
+  Serial.println("mqtt_callback_pager_message");
+  beep();
+  display.updatePagerMessage(sender, receiver, message, textPixelBase64, textCount);
+}
+
 
 void setup() {
   delay(2000);
@@ -20,6 +37,7 @@ void setup() {
 
   Serial.println("init display...");
   display.init();
+
   
   Serial.println("init wifi...");
   WiFi.disconnect();
@@ -33,6 +51,17 @@ void setup() {
     delay(1500);
     Serial.print(".");
   }
+
+
+
+  delay(1000);
+  display.setStatus("你好 CP IoT==========");
+  delay(2000);
+
+  mqtt.addDisplayCallback(&mqtt_callback_display);
+  mqtt.addPagerCallback(&mqtt_callback_pager_message);
+  mqtt.connect(MQTT_BROKER, MQTT_PORT);
+
   Serial.println("");
   Serial.println("wifi connected");
   Serial.print("IP address: ");
@@ -54,5 +83,6 @@ void setup() {
 
 
 void loop() {
+  mqtt.loop();
   audio.loop();
 }
