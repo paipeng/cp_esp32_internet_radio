@@ -37,11 +37,10 @@ void setup() {
 
   Serial.println("init display...");
   display.init();
-
   
-  Serial.println("init wifi...");
+  Serial.println("init wifi for audio...");
+  
   WiFi.disconnect();
-
   WiFi.mode(WIFI_STA);
 
   Serial.println("wifi connect");
@@ -52,8 +51,20 @@ void setup() {
     Serial.print(".");
   }
 
+  audio.setPinout(MAX98357A_I2S_BCLK, MAX98357A_I2S_LRC, MAX98357A_I2S_DOUT);
+  audio.setVolume(15);
+
+  Serial.println("audio connecting...");
+  if (audio.connecttohost("https://lhttp.qtfm.cn/live/1099/64k.mp3")) {
+    Serial.println("audio playing...");
+  } else {
+    Serial.println("audio connect failed");
+  }
 
 
+
+
+  Serial.println("init mqtt...");
   delay(1000);
   display.setStatus("你好 CP IoT==========");
   delay(2000);
@@ -68,16 +79,6 @@ void setup() {
   Serial.print(WiFi.localIP());
   Serial.println("");
 
-
-  audio.setPinout(MAX98357A_I2S_BCLK, MAX98357A_I2S_LRC, MAX98357A_I2S_DOUT);
-  audio.setVolume(15);
-
-  Serial.println("audio connecting...");
-  if (audio.connecttohost("https://lhttp.qtfm.cn/live/1099/64k.mp3")) {
-    Serial.println("audio playing...");
-  } else {
-    Serial.println("audio connect failed");
-  }
 
 }
 
