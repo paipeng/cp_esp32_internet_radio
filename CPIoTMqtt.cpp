@@ -232,14 +232,15 @@ void CPIoTMqtt::mqtt_callback(char *topic, byte *payload, unsigned int length) {
       }
     } else if (strstr(topic, MQTT_TOPIC_RADIO_PLAY) || strstr(topic, MQTT_TOPIC_RADIO_STOP)) {
 
-      StaticJsonDocument<51200> doc;
-      //DynamicJsonDocument doc(ESP.getMaxAllocHeap());
+      //StaticJsonDocument<4000> doc;
+      DynamicJsonDocument doc(ESP.getMaxAllocHeap());
       DeserializationError error = deserializeJson(doc, data);
     
       // Test if parsing succeeds.
       if (error) {
         Serial.print(F("deserializeJson() failed: "));
         Serial.println(error.f_str());
+        doc.clear();
       } else {
         int event = doc["event"];
         int playRadioId = doc["playRadioId"];
@@ -253,6 +254,7 @@ void CPIoTMqtt::mqtt_callback(char *topic, byte *payload, unsigned int length) {
 
 #endif
         ((CPIoTMqtt*)staticMqtt)->radioCallback(event, "");
+        doc.clear();
       }
     }
     
