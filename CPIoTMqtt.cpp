@@ -36,6 +36,11 @@ void CPIoTMqtt::addDisplayCallback(m_cb_s act) {
 void CPIoTMqtt::addPagerCallback(m_cb_p act) {
   pagerCallback = act;
 }
+
+void CPIoTMqtt::addRadioCallback(m_cb_radio act) {
+  radioCallback = act;
+}
+
 void CPIoTMqtt::process() {
   //do stuffs
   char message[] = "Hello World";
@@ -141,14 +146,24 @@ void CPIoTMqtt::mqtt_subscribe() {
     Serial.print("subscribe message board error!\n");    
   }
 
-  // MQTT_TOPIC_PAGER_MESSAGE
-  mqttPing = String(MQTT_TOPIC_PREFIX) + String(DEVICE_UDID) + "/" + String(MQTT_TOPIC_PAGER_MESSAGE);  
-  Serial.print("\nsubscribe pager message topic: " + mqttPing + "...\n");
+  // MQTT_TOPIC_RADIO_PLAY
+  mqttPing = String(MQTT_TOPIC_PREFIX) + String(DEVICE_UDID) + "/" + String(MQTT_TOPIC_RADIO_PLAY);  
+  Serial.print("\nsubscribe radio play topic: " + mqttPing + "...\n");
   ret = mqttClient.subscribe(mqttPing.c_str());
   if (ret) {
-    Serial.print("subscribe pager success!\n");
+    Serial.print("subscribe radio play success!\n");
   } else {
-    Serial.print("subscribe pager error!\n");    
+    Serial.print("subscribe radio play error!\n");    
+  }
+
+  // MQTT_TOPIC_RADIO_STOP
+  mqttPing = String(MQTT_TOPIC_PREFIX) + String(DEVICE_UDID) + "/" + String(MQTT_TOPIC_RADIO_STOP);  
+  Serial.print("\nsubscribe radio stop topic: " + mqttPing + "...\n");
+  ret = mqttClient.subscribe(mqttPing.c_str());
+  if (ret) {
+    Serial.print("subscribe radio stop success!\n");
+  } else {
+    Serial.print("subscribe radio stop error!\n");    
   }
 }
 
@@ -215,7 +230,32 @@ void CPIoTMqtt::mqtt_callback(char *topic, byte *payload, unsigned int length) {
         
         ((CPIoTMqtt*)staticMqtt)->pagerCallback(sender, receiver, message, textPixelBase64, textCount);
       }
+    } else if (strstr(topic, MQTT_TOPIC_RADIO_PLAY) || strstr(topic, MQTT_TOPIC_RADIO_STOP)) {
+
+      StaticJsonDocument<51200> doc;
+      //DynamicJsonDocument doc(ESP.getMaxAllocHeap());
+      DeserializationError error = deserializeJson(doc, data);
+    
+      // Test if parsing succeeds.
+      if (error) {
+        Serial.print(F("deserializeJson() failed: "));
+        Serial.println(error.f_str());
+      } else {
+        int event = doc["event"];
+        int playRadioId = doc["playRadioId"];
+        Serial.printf("event: %d playRadioId: %d\n", event, playRadioId);
+#if 0
+        // extract the values
+        JsonArray array = doc["radios"].as<JsonArray>();
+        for(JsonObject v : array) {
+            Serial.println(v);
+        }
+
+#endif
+        ((CPIoTMqtt*)staticMqtt)->radioCallback(event, "");
+      }
     }
+    
     Serial.println();
     Serial.println("-----------------------mqtt-end");
 }

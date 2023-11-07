@@ -28,6 +28,11 @@ void mqtt_callback_pager_message(String sender, String receiver, String message,
   display.updatePagerMessage(sender, receiver, message, textPixelBase64, textCount);
 }
 
+void mqtt_callback_radio(int event, String url) {
+  Serial.printf("mqtt_callback_radio event: %d\n", event);
+  Serial.println(url);
+
+}
 
 void setup() {
   delay(2000);
@@ -37,7 +42,7 @@ void setup() {
 
   Serial.println("init display...");
   display.init();
-  
+#if 0
   Serial.println("init wifi for audio...");
   
   WiFi.disconnect();
@@ -61,7 +66,7 @@ void setup() {
     Serial.println("audio connect failed");
   }
 
-
+#endif
 
 
   Serial.println("init mqtt...");
@@ -71,6 +76,7 @@ void setup() {
 
   mqtt.addDisplayCallback(&mqtt_callback_display);
   mqtt.addPagerCallback(&mqtt_callback_pager_message);
+  mqtt.addRadioCallback(&mqtt_callback_radio);
   mqtt.connect(MQTT_BROKER, MQTT_PORT);
 
   Serial.println("");
@@ -85,5 +91,5 @@ void setup() {
 
 void loop() {
   mqtt.loop();
-  audio.loop();
+  //audio.loop();
 }

@@ -21,17 +21,20 @@ class CPIoTMqtt {
     using m_cb = void (*)(char*); //alias function pointer
     using m_cb_s = void (*)(String);
     using m_cb_p = void (*)(String, String, String, String, int);
+    using m_cb_radio = void (*)(int, String);
   public:
     CPIoTMqtt();
   public:
     m_cb action;
     m_cb_s displayCallback;
     m_cb_p pagerCallback;    
+    m_cb_radio radioCallback;
     
   public:
     void connect(char* broker, int port);
     void addDisplayCallback(m_cb_s act);
     void addPagerCallback(m_cb_p act);
+    void addRadioCallback(m_cb_radio act);
     void add_callback(m_cb act);
     void process();
     void wifi_connect(void);
