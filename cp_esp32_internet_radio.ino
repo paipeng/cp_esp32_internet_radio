@@ -39,6 +39,39 @@ void mqtt_callback_radio(int event, String url) {
   }
 }
 
+void radio_play(String url) {
+  mqtt.disconnect();
+  delay(2000);
+  Serial.println("init wifi for audio...");
+  
+  WiFi.disconnect();
+  WiFi.mode(WIFI_STA);
+
+  Serial.println("wifi connect");
+  WiFi.begin(WIFI_SSID, WIFI_PASSWD);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1500);
+    Serial.print(".");
+  }
+  audio.setPinout(MAX98357A_I2S_BCLK, MAX98357A_I2S_LRC, MAX98357A_I2S_DOUT);
+  audio.setVolume(15);
+
+  Serial.println("audio connecting...");
+  if (audio.connecttohost(url.c_str())) { // "https://lhttp.qtfm.cn/live/1099/64k.mp3"
+    Serial.println("audio playing...");
+  } else {
+    Serial.println("audio connect failed");
+  }
+
+}
+
+void radio_stop() {
+  if (audio.isRunning()) {
+    audio.stopSong();
+  }
+}
+
 void setup() {
   delay(2000);
   Serial.begin(115200);
@@ -47,7 +80,8 @@ void setup() {
 
   Serial.println("init display...");
   display.init();
-#if 0
+
+#if 1
   Serial.println("init wifi for audio...");
   
   WiFi.disconnect();
@@ -61,18 +95,7 @@ void setup() {
     Serial.print(".");
   }
 
-  audio.setPinout(MAX98357A_I2S_BCLK, MAX98357A_I2S_LRC, MAX98357A_I2S_DOUT);
-  audio.setVolume(15);
-
-  Serial.println("audio connecting...");
-  if (audio.connecttohost("https://lhttp.qtfm.cn/live/1099/64k.mp3")) {
-    Serial.println("audio playing...");
-  } else {
-    Serial.println("audio connect failed");
-  }
-
 #endif
-
 
   Serial.println("init mqtt...");
   delay(1000);
@@ -89,12 +112,12 @@ void setup() {
   Serial.print("IP address: ");
   Serial.print(WiFi.localIP());
   Serial.println("");
-
-
 }
 
 
 void loop() {
   mqtt.loop();
-  //audio.loop();
+  if (audio.isRunning()) {
+    audio.loop();
+  }
 }
