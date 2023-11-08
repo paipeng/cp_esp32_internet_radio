@@ -250,15 +250,42 @@ void CPIoTMqtt::mqtt_callback(char *topic, byte *payload, unsigned int length) {
         int event = doc["event"];
         int playRadioId = doc["playRadioId"];
         Serial.printf("event: %d playRadioId: %d\n", event, playRadioId);
-#if 0
+        String url;
+#if 1
         // extract the values
         JsonArray array = doc["radios"].as<JsonArray>();
-        for(JsonObject v : array) {
-            Serial.println(v);
-        }
-
+        Serial.printf("array size: %d\n", array.size());
+        bool foundId = false;
+        for(JsonObject object : array) {
+          for (JsonPair kv : object) {
+            if (kv.key() == "id" && kv.value().is<int>() && kv.value().as<int>() == playRadioId) {
+              foundId = true;
+            } else if (kv.key() == "name") {
+              if (kv.value().is<String>()) {
+                Serial.println(kv.value().as<String>());
+              }
+            } else if (kv.key() == "url") {
+              if (foundId) {
+                if (kv.value().is<String>()) {
+                  Serial.println(kv.value().as<String>());
+                  url = kv.value().as<String>();
+                }
+              }
+            }
+#if 0
+            Serial.println(kv.key().c_str());
+            if (kv.value().is<int>()) {
+                Serial.println(kv.value().as<int>());
+            } else if (kv.value().is<String>()) {
+                Serial.println(kv.value().as<String>());
+            } else {
+                Serial.println(kv.value().as<bool>());
+            }
 #endif
-        ((CPIoTMqtt*)staticMqtt)->radioCallback(event, "");
+          }
+        }
+#endif
+        ((CPIoTMqtt*)staticMqtt)->radioCallback(event, url);
         doc.clear();
       }
     }

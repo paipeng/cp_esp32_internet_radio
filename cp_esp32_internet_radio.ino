@@ -31,7 +31,12 @@ void mqtt_callback_pager_message(String sender, String receiver, String message,
 void mqtt_callback_radio(int event, String url) {
   Serial.printf("mqtt_callback_radio event: %d\n", event);
   Serial.println(url);
-
+  if (event == 1) {
+    display.setStatus(url);
+    radio_play(url);
+  } else {
+    radio_stop();
+  }
 }
 
 void setup() {
