@@ -25,6 +25,11 @@ void CPIoTMqtt::connect(char* broker, int port) {
   displayCallback("Pager ready...");
 }
 
+void CPIoTMqtt::disconnect() {
+  mqttClient.disconnect();
+  client.stop();
+}
+
 void CPIoTMqtt::add_callback(m_cb act) {
   action = act;
 }

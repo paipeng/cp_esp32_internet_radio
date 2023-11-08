@@ -32,6 +32,7 @@ class CPIoTMqtt {
     
   public:
     void connect(char* broker, int port);
+    void disconnect();
     void addDisplayCallback(m_cb_s act);
     void addPagerCallback(m_cb_p act);
     void addRadioCallback(m_cb_radio act);
